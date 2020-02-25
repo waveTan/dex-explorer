@@ -1,71 +1,88 @@
 <template>
   <div class="home">
-    <div class="home_bg cb">
-      <div class="title tc fwhite">高度：1231231</div>
-      <div class="search">
-        <el-input placeholder="请输入地址/交易hash/区块高度" v-model="homeSearch" suffix-icon="el-icon-search">
-        </el-input>
-      </div>
+    <div class="h_height tc font30 fW600 capitalize">
+      {{$t('home.home0')}}:
+      <i class="el-icon-loading font18" v-if="height===0"></i>
+      <span v-else>{{height}}</span>
+    </div>
+    <div class="search">
+      <el-input :placeholder="$t('public.searchTip')" v-model="homeSearch" @keyup.enter.native="clickSearch">
+        <i class="el-icon-search el-input__icon click" slot="suffix" @click="clickSearch"></i>
+      </el-input>
     </div>
 
-    <div class="kanban">
-      <div class="k_left fl">
-        <div class="top">
-          <p class="fl"><img src="./../assets/img/logo.png"/></p>
-          <h6 class="fr">
-            <span>$&nbsp;213.23</span>&nbsp;
-            <i class="el-icon-top fCN font18"></i>&nbsp;
-            <font>
-              <i class="el-icon-plus"></i>&nbsp;
-              34%
-            </font>
-          </h6>
-        </div>
-        <div class="foot cb">
-          <h6 class="fl">Maket Cap 24h Vol</h6>
-          <div class="fr">
-            <p>$&nbsp;21312.324</p>
-            <p>$&nbsp;21312.324</p>
+    <div class="h_count" v-loading="countLoading">
+      <ul class="w1200">
+        <li>
+          <p class="font18 capitalize">{{$t('consensus.consensus1')}} <i class="el-icon-d-arrow-right"></i></p>
+          <h5 class="font24 click" @click="toUrl('consensus')">{{count.nodeNumber}}</h5>
+        </li>
+        <li>
+          <p class="font18 capitalize">{{$t('home.home2')}} <i class="el-icon-d-arrow-right"></i></p>
+          <h5 class="font24 click" @click="toUrl('consensus')">{{count.entrustNumber}}K</h5>
+        </li>
+        <li>
+          <p class="font18 capitalize">{{$t('home.home3')}}</p>
+          <h5 class="font24">{{count.circulateNumber}}K</h5>
+        </li>
+        <li>
+          <p class="font18 capitalize">{{$t('home.home4')}}</p>
+          <h5 class="font24">{{count.tradeNumber}}K</h5>
+        </li>
+      </ul>
+    </div>
+
+    <div class="h_animation" v-loading="packerListLoading">
+      <ul class="w1200 clicks" @click="toUrl('rotationInfo',rotationIndex)">
+        <li v-for="(item,index) in packerList" :key="index">
+          <p class="tc font12">{{item.agentName ? item.agentName : item.packingAddress}}</p>
+          <p class="greybox tc" v-show="item.order !== pagekerId">
+            <img v-if="item.blockHash && !item.yellow" src="./../assets/img/penGreen.svg">
+            <img v-else-if="item.yellow" src="./../assets/img/penYellow.svg">
+            <img v-else src="./../assets/img/greybox.svg">
+          </p>
+          <p class="blocks tc" v-show="item.order === pagekerId"><img src="./../assets/img/penBuild.svg"></p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="h_chart w1200">
+      <div class="h_chart_left">
+        <div class="h_chart_title tc">
+          <span class="font14 tc capitalize">{{$t('home.home5')}}</span>
+          <el-tooltip v-if="!isMobile" class="calc fr" effect="light" :content="$t('home.home6')" placement="top">
+            <i @click="toCalc" class="iconfont icon-calculator_icon font18 cursor-p click"></i>
+          </el-tooltip>
+          <div v-if="isMobile" class="calc fr">
+            <i @click="toCalc" class="iconfont icon-calculator_icon font18 cursor-p click"></i>
           </div>
         </div>
+        <ve-line style="top: -40px" height="100%" width="100%"
+                 :loading="yearChartLoading"
+                 :data="yearChartData"
+                 :legend-visible="false"
+                 :colors="colors"
+                 :settings="yearSettings">
+        </ve-line>
       </div>
-      <div class="k_right fr">
-        <ul>
-          <li class="fl">
-            <h6 class="tc">总交易数</h6>
-            <p class="tc">3242342343</p>
-          </li>
-          <li class="fl">
-            <h6 class="tc">共识节点</h6>
-            <p class="tc">88</p>
-          </li>
-          <li class="fl">
-            <h6 class="tc">最新区块时间</h6>
-            <p class="tc">2020-02-02 02:02:02</p>
-          </li>
-        </ul>
+      <div class="h_chart_right">
+        <div class="h_chart_title tc">
+          <span class="font14 tc capitalize">{{$t('home.home7')}}</span>
+          <label class="calc fr font14 cursor-p click capitalize"
+                 @click="toUrl('transaction')">{{$t('home.home8')}}</label>
+        </div>
+        <ve-line height="100%" width="100%" style="top: -40px"
+                 :loading="dayChartLoading"
+                 :data="dayChartData"
+                 :legend-visible="false"
+                 :colors="colors"
+                 :settings="daySettings">
+        </ve-line>
       </div>
     </div>
-
-    <div class="cb w1200 home_list">
-
-      <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="serial" label="序号" width="180" align="center">
-        </el-table-column>
-        <el-table-column prop="currency" label="币种" width="180" align="center">
-        </el-table-column>
-        <el-table-column prop="price" label="价格" min-width="150" align="center">
-        </el-table-column>
-        <el-table-column prop="market" label="市值" width="180" align="center">
-        </el-table-column>
-        <el-table-column prop="trading" label="交易量(24h)" width="160" align="center">
-        </el-table-column>
-        <el-table-column prop="circulation" label="流通量" width="160" align="center">
-        </el-table-column>
-        <el-table-column prop="upsDowns" label="涨跌(24h)" width="160" align="center">
-        </el-table-column>
-      </el-table>
-    </div>
+    <el-dialog title="" :visible.sync="calcDialog" :close-on-click-modal="false" center class="home_dialog">
+      <CalcBar></CalcBar>
+    </el-dialog>
   </div>
 </template>
 
@@ -95,63 +112,6 @@
         //搜索的内容
         homeSearch: '',
         height: this.$store.state.height,//当前高度
-
-        tableData: [
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-        ],
         //统计信息
         count: {
           nodeNumber: 0,//节点信息
@@ -380,117 +340,178 @@
   @import "./../assets/css/style";
 
   .home {
-    .home_bg {
-      height: 378px;
-      width: 100%;
-      background: url("./../assets/img/one.png") 100%, 100%;
-      margin: 0 0 0 0;
+    .h_height {
+      color: @Acolor;
+      margin: 36px auto;
+    }
+    .search {
+      width: 818px;
+      margin: 0 auto;
+      .el-input__inner {
+        height: 50px;
+        line-height: 50px;
+        border-radius: 2px;
+        border: 1px solid #969eaf;
+        &::-webkit-input-placeholder {
+          color: @Acolor2;
+          font-size: 14px;
+          text-align: left;
+        }
+        &:focus {
+          border-color: @Ncolour;
+        }
+      }
+      .el-input__suffix {
+        right: 10px;
+      }
+    }
+    .h_count {
+      margin: 58px auto 0;
+      border-top: @BD1;
+      border-bottom: @BD1;
+      ul {
+        height: 126px;
+        li {
+          text-align: center;
+          width: 25%;
+          height: 80px;
+          float: left;
+          border-left: @BD1;
+          margin: 26px 0 0 0;
+          padding-top: 10px;
+          &:first-child {
+            border-left: 0
+          }
+          p {
+            color: @Acolor1;
+          }
+          h5 {
+            color: @Acolor;
+            margin: 10px 0 0 0;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+    .h_animation {
+      border-bottom: @BD1;
+      background-color: #F9FAFD;
+      height: 130px;
+      .w1200 {
+        li {
+          float: right;
+          width: 150px;
+          .font12 {
+            margin: 30px 0 0 0;
+            color: #a4aec4;
+          }
+          .greybox {
+            width: 150px;
+            margin: 15px auto 0;
+            img {
+              width: 40px;
+            }
+          }
+          .blocks {
+            margin: -15px auto 0;
+            img {
+              width: 155px;
+              margin: -18px 0 0 0;
+            }
 
-      .title {
-        margin: 0 auto;
-        padding: 60px 0 40px 0;
-        font-size: 30px;
-        font-weight: bold;
+          }
+
+        }
+      }
+    }
+    .h_chart {
+      height: 375px;
+      margin: 50px auto;
+      .h_chart_left, .h_chart_right {
+        width: 48.7%;
+        height: 350px;
+        float: left;
+        border: @BD1;
+        .h_chart_title {
+          margin: 24px 0 1px 0;
+          z-index: 9;
+          position: relative;
+        }
+        .calc {
+          margin: 3px 30px 0 0;
+        }
+      }
+      .h_chart_left {
+
+      }
+      .h_chart_right {
+        float: right;
+      }
+    }
+
+    .home_dialog {
+      .el-dialog {
+        width: 745px;
+      }
+    }
+
+    @media screen and (max-width: 1000px) {
+      .h_height {
+        margin: 1.2rem 0;
       }
 
       .search {
-        width: 818px;
-        margin: 0 auto;
-      }
-    }
+        width: 90%;
 
-    .kanban {
-      width: 1200px;
-      margin: -40px auto 0;
-      height: 145px;
-
-      .k_left {
-        width: 360px;
-        height: 150px;
-        border-radius: 10px;
-        box-shadow: 5px 0 20px 0 #131732;
-        background-color: #ffffff;
-
-        .top {
-          p {
-            width: 140px;
-
-            img {
-              margin: 20px 0 0 40px;
-            }
-          }
-
-          h6 {
-            width: 200px;
-            height: 30px;
-            text-align: left;
-            font-weight: bold;
-            margin: 25px 0 0 0;
-
-            span {
-              font-size: 22px;
-            }
-          }
-        }
-
-        .foot {
-          h6 {
-            width: 90px;
-            margin: 20px 0 0 40px;
-          }
-
-          .fr {
-            width: 200px;
-            height: 30px;
-            text-align: left;
-            margin: 10px 0 0 0;
-
-            p {
-              font-weight: bold;
-              line-height: 30px;
-              font-size: 18px;
-            }
-
-          }
-        }
       }
 
-      .k_right {
-        width: 800px;
-        height: 150px;
-        border-radius: 10px;
-        box-shadow: 5px 0 20px 0 #131732;
-        background-color: #ffffff;
-
+      .h_count {
+        margin: 1rem auto 0;
         ul {
+          height: 5rem;
           li {
-            width: 33.32%;
-            border-right: 1px solid #dfe4ed;
-            height: 90px;
-            margin: 30px auto;
-
-            &:last-child {
-              border: 0;
-            }
-
-            h6 {
-              font-weight: bold;
-              font-size: 16px;
-              line-height: 30px;
-              margin: 18px 0 0 0;
-            }
-
+            height: 3rem;
+            margin: 1rem 0 0 0;
             p {
-              font-weight: bold;
-              font-size: 16px;
+              font-size: 0.7rem;
+              line-height: 0.7rem;
+            }
+            h5 {
+              font-size: 0.8rem;
+              line-height: 0.8rem;
             }
           }
         }
       }
-    }
 
-    .home_list {
-      margin: 40px auto 100px;
+      .h_animation {
+        display: none;
+      }
+
+      .h_chart {
+        height: auto;
+        margin: 1.5rem 0;
+        .h_chart_left, .h_chart_right {
+          width: 100%;
+          height: 15rem;
+          float: none;
+        }
+
+      }
+
+      .home_dialog {
+        .el-dialog {
+          width: 92%;
+          .el-dialog__body {
+            padding: 1rem 0.5rem;
+          }
+        }
+      }
+    }
+    .el-dialog__wrapper {
+      .el-dialog {
+        background-color: @Bcolour;
+      }
     }
   }
 </style>

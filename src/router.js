@@ -86,5 +86,11 @@ export default new Router({
       name: 'protocolUpdate',
       component: resolve => require(['@/views/protocol_update/Index'], resolve)
     },
+    {
+      path: '/assets',
+      name: 'assets',
+      component: resolve => require(['@/views/assets/assets'], resolve)
+    },
+
   ]
 })

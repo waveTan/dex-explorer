@@ -48,7 +48,7 @@ module.exports = {
     sourceMap: true
   },
   devServer: {
-    port: 8080,
+    port: 8071,
     host: '0.0.0.0',
     https: false, // https:{type:Boolean}
     open: true, //配置自动启动浏览器

@@ -6,8 +6,9 @@
       <el-menu-item index="block" class="font18 fw capitalize">{{$t('nav.block')}}</el-menu-item>
       <el-menu-item index="address" class="font18 fw capitalize">{{$t('nav.address')}}</el-menu-item>
       <el-menu-item index="transaction" class="font18 fw capitalize">{{$t('nav.transaction')}}</el-menu-item>
-      <el-menu-item index="consensus" class="font18 fw capitalize">{{$t('nav.consensus')}}</el-menu-item>
-      <el-menu-item index="contracts" class="font18 fw capitalize">{{$t('nav.contracts')}}</el-menu-item>
+     <!-- <el-menu-item index="consensus" class="font18 fw capitalize">{{$t('nav.consensus')}}</el-menu-item>
+      <el-menu-item index="contracts" class="font18 fw capitalize">{{$t('nav.contracts')}}</el-menu-item>-->
+      <el-menu-item index="assets" class="font18 fw capitalize">资产</el-menu-item>
     </el-menu>
   </div>
 </template>
