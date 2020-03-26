@@ -43,6 +43,12 @@
     }
   }
 }
+.el-input input {
+  border-color: #959eb4;
+  &:hover {
+    border-color: @Ncolour;
+  }
+}
 
 .el-table {
   tr {
@@ -56,7 +62,7 @@
         padding: 0;
         background-color: @Bcolour;
         .cell {
-          color: @Acolor2;
+          color: #fff;
           height: 48px;
           line-height: 48px;
           text-transform: Capitalize;
@@ -66,6 +72,9 @@
   }
   td {
     padding: 8px 0 !important;
+  }
+  &.el-table--striped .el-table__body tr.el-table__row--striped td {
+    background: #f2f3fd;
   }
 }
 
@@ -83,10 +92,13 @@
     margin: 0 0 20px;
     .el-tabs__nav-wrap {
       .el-tabs__active-bar {
-        background-color: transparent;
+        //background-color: transparent;
       }
       .el-tabs__item {
         text-transform: Capitalize;
+        font-size: 18px;
+        font-weight: 600;
+        color: #475472;
         &:hover {
           color: @Ncolour;
         }
@@ -148,7 +160,7 @@
     background-color: @Bcolour;
     .el-dialog__header {
       .el-dialog__headerbtn {
-        background-color: @Bcolour;
+        background-color: #f5f6f9;
         top: -15px;
         right: -15px;
         border-radius: 15px;

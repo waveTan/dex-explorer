@@ -10,14 +10,15 @@
     <div class="w1200 info_tabs">
       <h3 class="tabs_title tabs_header capitalize">{{$t('public.basicInfo')}}</h3>
       <ul class="ul" ref="menu">
-        <li class="tabs_infos fl capitalize">
-          <p>{{$t('public.amount')}}<span>{{txInfo.value}}</span></p>
-        </li>
+<!--        <li class="tabs_infos fl capitalize">-->
+<!--          <p>{{$t('public.amount')}}<span>{{txInfo.value}}</span></p>-->
+<!--        </li>-->
         <li class="tabs_infos fl capitalize"><p>{{$t('public.type')}}<span>{{$t('type.'+txInfo.type)}}</span></p></li>
+        <li class="tabs_infos fl capitalize"><p>{{$t('public.tradingStatus')}}<span>{{$t('tradingStatusType.'+txInfo.status)}}</span></p></li>
         <li class="tabs_infos fl capitalize">
           <p>
             {{$t('public.fee')}}
-            <span>{{txInfo.fees}}<span class="fCN">&nbsp;{{symbol}}</span></span>
+            <span>{{txInfo.fee&&txInfo.fee.value}}<span class="fCN">&nbsp;{{txInfo.fee&&txInfo.fee.symbol}}</span></span>
             <!--<span v-if="contractInfo.length !== 0">
             {{txInfo.fees}}
              <el-tooltip :content="contractInfo.totalFee+'('+$t('transactionInfo.transactionInfo0')+')'+'='
@@ -48,11 +49,11 @@
           </p>
         </li>
 
-        <li class="tabs_infos fl" v-if="txInfo.type ===3">
+       <!-- <li class="tabs_infos fl" v-if="txInfo.type ===3">
           <p>{{$t('public.alias')}}<span>{{txInfo.txData.alias}}</span></p>
         </li>
 
-        <!--加入、退出节点-->
+        &lt;!&ndash;加入、退出节点&ndash;&gt;
         <li class="tabs_infos fl capitalize" v-if="txInfo.type ===5 || txInfo.type ===6">
           <p>{{$t('transactionInfo.transactionInfo4')}}
             <span class="click uppercase" @click="toUrl('consensusInfo',txInfo.txData.txHash)">
@@ -68,7 +69,7 @@
           <p>{{$t('public.creditValue')}}<span>{{txInfo.txData.creditValue}}</span></p>
         </li>
 
-        <!--创建、注销节点-->
+        &lt;!&ndash;创建、注销节点&ndash;&gt;
         <li class="tabs_infos fl capitalize" v-if="txInfo.type ===4 || txInfo.type ===9">
           <p>{{$t('public.createAddress')}}
             <span class="click"
@@ -86,7 +87,7 @@
           </p>
         </li>
 
-        <!--红黄牌-->
+        &lt;!&ndash;红黄牌&ndash;&gt;
         <li class="tabs_infos fl" v-if="txInfo.type ===7 || txInfo.type ===8">
           <p class="redcal">{{$t('transactionInfo.transactionInfo5')}}
             <span class="click" v-show="txInfo.type === 7" v-for="item in txInfo.txDataList" :key="item.address"
@@ -107,7 +108,7 @@
           <p>{{$t('public.reason')}}<span>{{txInfo.reason}}</span></p>
         </li>
 
-        <!--创建、调用合约-->
+        &lt;!&ndash;创建、调用合约&ndash;&gt;
         <li class="tabs_infos fl"
             v-if="txInfo.type ===15 || txInfo.type ===16|| txInfo.type ===17|| txInfo.type ===18">
           <p>{{$t('public.contractAddress')}}
@@ -142,7 +143,7 @@
             <font v-show="!contractInfo.success">({{contractInfo.errorMessage}})</font>
           </p>
         </li>
-        <!--调用合约-->
+        &lt;!&ndash;调用合约&ndash;&gt;
         <li class="tabs_infos fl capitalize" v-if="txInfo.type ===16">
           <p>{{$t('transactionInfo.transactionInfo9')}}
             <span>
@@ -152,7 +153,7 @@
                </el-tooltip>
             </span>
           </p>
-        </li>
+        </li>-->
         <li class="tabs_infos fl tabs_infos_long">
           <p v-if="txInfo.remark && txInfo.remark.length > 50">{{$t('public.remarks')}}
             <el-tooltip class="calc fr" effect="light" :content="txInfo.remark" placement="top">
@@ -167,7 +168,7 @@
       </ul>
     </div>
 
-    <div class="w1200 token_list bg-white" v-if="nulsTransfers.length !==0">
+    <!--<div class="w1200 token_list bg-white" v-if="nulsTransfers.length !==0">
       <h3 class="tabs_title tabs_header capitalize">{{$t('transactionInfo.transactionInfo12')}}</h3>
       <ul class="inputs fl scroll">
         <li class="font14" v-for="item of nulsTransfers" :key="item.from">
@@ -207,7 +208,7 @@
           <label class="fr" style="width: 200px">{{item.value}}<span> {{item.symbol}}</span></label>
         </li>
       </ul>
-    </div>
+    </div>-->
 
     <div class="w1200 t_basics bg-white">
       <h3 class="tabs_title tabs_header capitalize"><span>{{$t('public.input')}}</span>{{$t('public.output')}}</h3>
@@ -254,7 +255,7 @@
                 <label class="fr">
                   {{item.value}}
                   <span class="fCN"> {{item.symbol}}<i class="iconfont yellow font12" :title="item.isShowInfo"
-                                                       :class="item.lockTime > 0 ? 'icon-lock_icon':''"></i></span>
+                                                       :class="item.lockTime !== 0 ? 'icon-lock_icon':''"></i></span>
                 </label>
               </li>
             </ul>
@@ -301,11 +302,8 @@
         inputNumber: 0,
         outNumber: 0,
         viewDialog: false, //业务数据显示
-        liShow: false,//显示空白li
         contractInfo: [],//合约信息
         tokenTransfers: [],//token转账信息
-        //txhash定时器
-        txhashInterval: null,
         isContracts: false,//是否为合约交易
         nulsTransfers: [],//合约转出NULS
         symbol: sessionStorage.hasOwnProperty('symbol') ? sessionStorage.getItem('symbol') : 'NULS',//默认symbol
@@ -315,23 +313,8 @@
       this.getTxInfoByHash(this.txhash);
     },
     mounted() {
-      setTimeout(() => {
-        this.liShow = (this.$refs.menu.children.length - 2) % 2 === 1
-      }, 100);
-
-      //定时获取地址
-      this.txhashInterval = setInterval(() => {
-        this.txhash = this.$route.query.hash;
-      }, 500)
-    },
-    beforeDestroy() {
-      //离开界面清除定时器
-      if (this.txhashInterval) {
-        clearInterval(this.txhashInterval);
-      }
     },
     methods: {
-
       /**
        * 根据hash获取交易详情
        */
@@ -339,7 +322,7 @@
         this.nulsTransfers = [];
         this.contractInfo = [];
         this.tokenTransfers = [];
-        this.$post('/', 'getTx', [hash])
+        this.$post('/jsonrpc', 'getTx', [hash])
           .then((response) => {
             //console.log(response);
             if (response.hasOwnProperty("result")) {
@@ -413,6 +396,13 @@
                 for (let item of response.result.coinTos) {
                   item.value = timesDecimals(item.amount, 8);
                   item.addresss = superLong(item.address, 10);
+                }
+              }
+
+              if (response.result.coinTos) {
+                /*for (let item of response.result.coinTos) {
+                  item.value = timesDecimals(item.amount, 8);
+                  item.addresss = superLong(item.address, 10);
                   //根据lockTime字段长度判断是高度锁定还时间锁定
                   if (item.lockTime === 0) {
                     item.isShowInfo = ''
@@ -425,7 +415,7 @@
                     const expectTime = moment(moment().add(heightDiffer, 'seconds')).format('YYYY-MM-DD HH:mm:ss');
                     item.isShowInfo = this.$t('transactionInfo.transactionInfo10') + ":" + expectTime;
                   }
-                }
+                }*/
                 this.outNumber = response.result.coinTos.length;
               }
 
@@ -471,13 +461,6 @@
           name: name,
           query: newQuery
         })
-      }
-    },
-    watch: {
-      txhash: function () {
-        // txhash，当放生变化时，重新获取数据
-        //console.log('new: %s, old: %s', val, oldVal);
-        this.getTxInfoByHash(this.txhash);
       }
     }
   }

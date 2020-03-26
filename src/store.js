@@ -11,12 +11,19 @@ export default new Vuex.Store({
     nodeNumber: [],
     //nuls 信息
     NULSNumber: [],
+    blockInfo: {
+      bestBlockHeight:0,//高度
+      consensusCount: 0, //共识节点
+      bestBlockTime: 0, //区块时间
+      txCount: 0  //总交易数
+    }
   },
   mutations: {
-
+    SET_BLOCK_INFO(state, data) {
+      state.blockInfo = data
+    },
     SET_HEIGHT(state, data) {
       state.height = data;
-      sessionStorage.setItem('height', data.height);
     },
 
     SET_NODENUMBER(state, data) {
@@ -28,13 +35,6 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    height(state) {
-      if (!state.height) {
-        state.height = parseInt(sessionStorage.getItem('height'))
-      }
-      return state.height
-    },
-
     nodeNumber(state) {
       return state.nodeNumber
     },

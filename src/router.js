@@ -52,36 +52,6 @@ export default new Router({
       component: resolve => require(['@/views/transaction/TransactionInfo'], resolve)
     },
     {
-      path: '/consensus',
-      name: 'consensus',
-      component: resolve => require(['@/views/consensus/Consensus'], resolve)
-    },
-    {
-      path: '/consensus/info',
-      name: 'consensusInfo',
-      component: resolve => require(['@/views/consensus/ConsensusInfo'], resolve)
-    },
-    {
-      path: '/rotation/info',
-      name: 'rotationInfo',
-      component: resolve => require(['@/views/consensus/RotationInfo'], resolve)
-    },
-    {
-      path: '/contracts',
-      name: 'contracts',
-      component: resolve => require(['@/views/contracts/Contracts'], resolve)
-    },
-    {
-      path: '/contracts/info',
-      name: 'contractsInfo',
-      component: resolve => require(['@/views/contracts/ContractsInfo'], resolve)
-    },
-    {
-      path: '/token/info',
-      name: 'tokenInfo',
-      component: resolve => require(['@/views/contracts/TokenInfo'], resolve)
-    },
-    {
       path: '/protocol_update',
       name: 'protocolUpdate',
       component: resolve => require(['@/views/protocol_update/Index'], resolve)
@@ -89,8 +59,12 @@ export default new Router({
     {
       path: '/assets',
       name: 'assets',
-      component: resolve => require(['@/views/assets/assets'], resolve)
+      component: resolve => require(['@/views/assets/Assets'], resolve)
     },
-
+    {
+      path: '/assets/info',
+      name: 'assetsInfo',
+      component: resolve => require(['@/views/assets/AssetsInfo'], resolve)
+    },
   ]
 })

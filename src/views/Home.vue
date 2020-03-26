@@ -1,9 +1,12 @@
 <template>
   <div class="home">
     <div class="home_bg cb">
-      <div class="title tc fwhite">高度：1231231</div>
+      <div class="title tc fwhite">{{$t('home.home0')}}：{{count.bestBlockHeight}}</div>
       <div class="search">
-        <el-input placeholder="请输入地址/交易hash/区块高度" v-model="homeSearch" suffix-icon="el-icon-search">
+        <el-input :placeholder="$t('home.home11')"
+                  @keyup.enter.native="clickSearch"
+                  v-model="homeSearch">
+          <i class="el-icon-search el-input__icon click" slot="suffix" @click="clickSearch"></i>
         </el-input>
       </div>
     </div>
@@ -13,56 +16,61 @@
         <div class="top">
           <p class="fl"><img src="./../assets/img/logo.png"/></p>
           <h6 class="fr">
-            <span>$&nbsp;213.23</span>&nbsp;
-            <i class="el-icon-top fCN font18"></i>&nbsp;
-            <font>
-              <i class="el-icon-plus"></i>&nbsp;
-              34%
-            </font>
+            <span>{{defaultInfo.price}}</span>&nbsp;
+            <i v-if="upOrDown==='up'" class="el-icon-top font24"></i>
+            <i v-else class="el-icon-down font24"></i>&nbsp;
+            <span class="gray-text">{{defaultInfo.upsDowns}}</span>
           </h6>
         </div>
         <div class="foot cb">
-          <h6 class="fl">Maket Cap 24h Vol</h6>
-          <div class="fr">
-            <p>$&nbsp;21312.324</p>
-            <p>$&nbsp;21312.324</p>
-          </div>
+          <p>
+<!--            <span class="gray-text">Maket Cap</span>-->
+          </p>
+          <p>
+            <span class="gray-text">24h Vol</span>{{defaultInfo.dealAmount}}
+          </p>
         </div>
       </div>
       <div class="k_right fr">
         <ul>
           <li class="fl">
-            <h6 class="tc">总交易数</h6>
-            <p class="tc">3242342343</p>
+            <h6 class="tc gray-text">{{$t('home.home1')}}</h6>
+            <p class="tc">{{count.txCount}}</p>
           </li>
           <li class="fl">
-            <h6 class="tc">共识节点</h6>
-            <p class="tc">88</p>
+            <h6 class="tc gray-text">{{$t('home.home2')}}</h6>
+            <p class="tc">{{count.consensusCount}}</p>
           </li>
           <li class="fl">
-            <h6 class="tc">最新区块时间</h6>
-            <p class="tc">2020-02-02 02:02:02</p>
+            <h6 class="tc gray-text">{{$t('home.home3')}}</h6>
+            <p class="tc">{{count.bestBlockTime}}</p>
           </li>
         </ul>
       </div>
     </div>
 
     <div class="cb w1200 home_list">
-
-      <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="serial" label="序号" width="180" align="center">
+<!--      <p class=" load-more fr click" @click="$router.push('/assets')">查看更多</p>-->
+      <el-table v-loading="listLoading" :data="tableData" stripe style="width: 100%">
+        <el-table-column type="index" label="#" width="180" align="center">
         </el-table-column>
-        <el-table-column prop="currency" label="币种" width="180" align="center">
+        <el-table-column :label="$t('home.home5')" width="180" align="center">
+          <template slot-scope="scope">
+            <span class="click" @click="toUrl(scope.row)">{{scope.row.baseSymbol}}</span>
+          </template>
         </el-table-column>
-        <el-table-column prop="price" label="价格" min-width="150" align="center">
+        <el-table-column prop="price" :label="$t('home.home6')" min-width="150" align="center">
         </el-table-column>
-        <el-table-column prop="market" label="市值" width="180" align="center">
+<!--        <el-table-column prop="market" :label="$t('home.home7')" width="180" align="center">-->
+<!--        </el-table-column>-->
+        <el-table-column prop="dealAmount" :label="$t('home.home8')" width="160" align="center">
         </el-table-column>
-        <el-table-column prop="trading" label="交易量(24h)" width="160" align="center">
-        </el-table-column>
-        <el-table-column prop="circulation" label="流通量" width="160" align="center">
-        </el-table-column>
-        <el-table-column prop="upsDowns" label="涨跌(24h)" width="160" align="center">
+<!--        <el-table-column prop="circulation" :label="$t('home.home9')" width="160" align="center">-->
+<!--        </el-table-column>-->
+        <el-table-column prop="upsDowns" :label="$t('home.home10')" width="160" align="center">
+          <template slot-scope="scope">
+            <span :class="scope.row.upsDowns.indexOf('-')>-1?'rise-down':'rise-up'">{{scope.row.upsDowns}}</span>
+          </template>
         </el-table-column>
       </el-table>
     </div>
@@ -70,187 +78,94 @@
 </template>
 
 <script>
-  import {BigNumber} from 'bignumber.js'
-  import CalcBar from '@/components/CalcBar'
-  import {superLong, timesDecimals} from '@/api/util.js'
+  import {divisionDecimals,getLocalTime} from '@/api/util.js'
+  import moment from 'moment'
 
   export default {
     data() {
-      this.colors = ['#7db46d', '#7db46d'];
-      this.yearSettings = {
-        yAxisType: ['percent'],
-        labelMap: {
-          'value': 'APR'
-        },
-      };
-      this.daySettings = {
-        yAxisType: ['KMB'],
-        labelMap: {
-          'value': 'TXS'
-        },
-      };
-
       return {
         isMobile: false,
         //搜索的内容
         homeSearch: '',
-        height: this.$store.state.height,//当前高度
-
-        tableData: [
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-          {
-            serial: '1',
-            currency: 'NULS',
-            price: '$1.213',
-            market: '$234234',
-            trading: '234234324',
-            circulation: '23454 NULS',
-            upsDowns: '23.34%'
-          },
-        ],
+        tableData: [],
         //统计信息
-        count: {
-          nodeNumber: 0,//节点信息
-          entrustNumber: '0',//全网委托总量 consensusTotal
-          circulateNumber: '0',//总发行量
-          tradeNumber: '0'//总流通量
-        },
-        countLoading: true,
-        //计算器弹框
-        calcDialog: false,
-        //打包列表
-        packerList: [],
-        packerListLoading: true,
-        //轮次信息
-        rotationIndex: '',
-        //打包节点ID
-        pagekerId: 0,
-        //年化奖励率
-        yearChartData: {},
-        dayChartData: {},
-        yearChartLoading: true,
-        yearRateData: [],
-        dayRateData: [],
-        dayChartLoading: true,
-        homeSetInterval: null, //首页定时器
-        heightSetInterval: null, //首页高度获取定时器
+        // count: this.$store.state.blockInfo,
+        listLoading: true,
+        defaultInfo:{}
+      }
+    },
+   /* watch: {
+      '$store.state.blockInfo'() {
+        const blockInfo = this.$store.state.blockInfo
+      }
+    },*/
+    computed: {
+      count() {
+        const blockInfo = this.$store.state.blockInfo;
+        return blockInfo
+      },
+      upOrDown() {
+        const upsDowns = this.defaultInfo.upsDowns
+        if (upsDowns && upsDowns.indexOf('-') > -1) {
+          return 'down'
+        }
+        return 'up'
       }
     },
     created() {
       this.isMobile = /(iPhone|iOS|Android|Windows Phone)/i.test(navigator.userAgent);
-      this.getNULSInfo();
-      //统计信息
-      this.getYearRateData(3);
-      this.get14DaysData(0);
-      this.getRotationList();
-      //10秒循环一次数据
-      this.homeSetInterval = setInterval(() => {
-        this.getRotationList();
-        this.height = this.$store.state.height;
-      }, 10000);
+      // this.getInfo();
+      this.getDefaultTradingInfo()
+      this.getDefaultCoinTradingList()
     },
     mounted() {
-      this.heightSetInterval = setInterval(() => {
-        if (this.height === 0) {
-          this.height = this.$store.state.height;
-          this.getNULSInfo();
-          this.getYearRateData(3);
-          this.get14DaysData(0);
-          this.getRotationList();
-        }
-      }, 1000)
-    },
-    destroyed() {
-      clearInterval(this.homeSetInterval);
-      clearInterval(this.heightSetInterval);
-    },
-    components: {
-      CalcBar
+
     },
     methods: {
-
-      /**
-       * @disc: 获取节点信息从vuex里面
-       * @params:
-       * @date: 2019-08-30 11:17
-       * @author: Wave
-       */
-      getNULSInfo() {
-        if (this.$store.state.nodeNumber.consensusCount) {
-          this.count.nodeNumber = this.$store.state.nodeNumber.consensusCount;
-        } else {
-          this.count.nodeNumber = 0
-        }
-        let NULSNumber = this.$store.state.NULSNumber;
-        if (NULSNumber.length !== 0) {
-          let newCirculateNumber = new BigNumber(timesDecimals(NULSNumber.total, 11));
-          this.count.circulateNumber = newCirculateNumber.toFormat(2);
-          let newEntrustNumber = new BigNumber(timesDecimals(NULSNumber.consensusTotal, 11));
-          this.count.entrustNumber = newEntrustNumber.toFormat(2);
-          let newTradeNumber = new BigNumber(timesDecimals(NULSNumber.circulation, 11));
-          this.count.tradeNumber = newTradeNumber.toFormat(2);
-          this.countLoading = false;
-        }
+      //
+      getDefaultTradingInfo() {
+        this.$post('/jsonrpc', 'getDefaultTradingInfo', [])
+          .then((response) => {
+            //console.log(response);
+            if (response.hasOwnProperty("result")) {
+              const res = response.result
+              res.price = divisionDecimals(res.price, res.quoteDecimal)
+              res.dealAmount = divisionDecimals(res.dealAmount, res.baseDecimal)
+              res.upsDowns = res.direction < 0 ? '-' + res.change  + '%' : '+' + res.change + '%'
+              this.defaultInfo = res
+            }
+          })
       },
-
+      //获取交易对列表
+      getDefaultCoinTradingList() {
+        this.listLoading = true
+        this.$post('/jsonrpc', 'getDefaultCoinTradingList', [])
+          .then((response) => {
+            //console.log(response);
+            if (response.hasOwnProperty("result")) {
+              this.listLoading = false
+              response.result.map(v=>{
+                v.dealAmount = divisionDecimals(v.dealAmount , v.baseDecimal)
+                v.price = divisionDecimals(v.price,v.quoteDecimal)
+                v.upsDowns = v.direction < 0 ? '-' + v.change + '%' : '+' + v.change + '%'
+              })
+              this.tableData = response.result
+            }
+          })
+      },
       /**
        *  首页全局搜索框
        **/
       clickSearch() {
-        this.$post('/', 'search', [this.homeSearch])
+        this.$post('/jsonrpc', 'search', [this.homeSearch])
           .then((response) => {
             //console.log(response);
             if (response.hasOwnProperty("result")) {
               if (response.result.type === 'block') {
                 this.$router.push({
                   name: 'blockInfo',
-                  query: {height: response.result.data.txList[0].height}
+                  query: {height: response.result.data.height}
                 });
-                sessionStorage.setItem('navActive', 'block');
               } else if (response.result.type === 'tx') {
                 this.$router.push({
                   name: 'transactionInfo',
@@ -260,11 +175,6 @@
                 this.$router.push({
                   name: 'addressInfo',
                   query: {address: response.result.data.address}
-                })
-              } else if (response.result.type === 'contract') {
-                this.$router.push({
-                  name: 'contractsInfo',
-                  query: {contractAddress: response.result.data.contractAddress, tabName: 'first'}
                 })
               } else {
                 this.$message({message: this.$t('codeInfo.codeInfo12'), type: 'error', duration: 1000});
@@ -278,101 +188,23 @@
         })
       },
 
-      /**
-       * 计算器弹框显示
-       */
-      toCalc() {
-        this.calcDialog = true
-      },
-
-      /**0
-       * 获取轮次列表
-       */
-      getRotationList() {
-        this.$post('/', 'getBestRoundInfo', [])
-          .then((response) => {
-            //console.log(response);
-            if (response.hasOwnProperty("result")) {
-              for (let item of response.result.itemList) {
-                item.agentName = item.agentName ? item.agentName : superLong(item.seedAddress, 6);
-              }
-              this.rotationIndex = response.result.index;
-              this.pagekerId = response.result.packerOrder;
-              this.packerList = response.result.itemList.slice(response.result.packerOrder - 1, response.result.packerOrder + 6);
-              let packed = response.result.itemList.slice(response.result.packerOrder - 2, response.result.packerOrder - 1);
-              this.packerList.unshift(packed[0]);
-              this.packerListLoading = false;
-            }
-          })
-      },
-
-      /**
-       * 获取共识年化奖励率
-       */
-      getYearRateData(time) {
-        this.$post('/', 'getAnnulizedRewardStatistical', [time])
-          .then((response) => {
-            //console.log(response);
-            if (response.hasOwnProperty("result")) {
-              for (let item of response.result) {
-                item.value = item.value / 100
-              }
-              this.yearRateData = response.result;
-            }
-          })
-      },
-
-      /**
-       * 获取14天交易历史数据
-       */
-      get14DaysData(time) {
-        this.$post('/', 'getTxStatistical', [time])
-          .then((response) => {
-            //console.log(response);
-            if (response.hasOwnProperty("result")) {
-              this.dayRateData = response.result
-            }
-          })
-      },
 
       /**
        * url 连接跳转
        * @param name
        * @param parmes
        */
-      toUrl(name, parmes) {
-        if (name === 'transaction') {
-          this.$router.push({
-            name: name
-          })
-        } else {
-          this.$router.push({
-            name: name,
-            query: {rotation: parmes}
-          })
-        }
+      toUrl(item) {
+        this.$router.push({
+          name: 'assetsInfo',
+          query: {
+            chainId: item.baseAssetChainId,
+            assetId: item.baseAssetId,
+            tradingHash: item.tradingHash
+          }
+        })
       },
-
     },
-    watch: {
-      yearRateData: function () {
-        // yearRateData，当放生变化时，触发这个回调函数绘制图表 yearChartLoading
-        this.yearChartLoading = false;
-        this.yearChartData = {
-          columns: ['key', 'value'],
-          rows: this.yearRateData
-        };
-      },
-      dayRateData: function () {
-        // dayRateData，当放生变化时，触发这个回调函数绘制图表 dayChartLoading
-        this.dayChartLoading = false;
-        this.dayChartData = {
-          columns: ['key', 'value'],
-          rows: this.dayRateData
-        };
-      }
-    }
-
   }
 </script>
 
@@ -380,10 +212,19 @@
   @import "./../assets/css/style";
 
   .home {
+    .rise-up {
+      color: #7dd319;
+    }
+    .rise-down{
+      color: #f65950;
+    }
     .home_bg {
       height: 378px;
       width: 100%;
-      background: url("./../assets/img/one.png") 100%, 100%;
+      background-image: url("./../assets/img/one.jpg");
+      background-size: 100% 100%;
+      background-position: top center;
+      background-repeat: no-repeat;
       margin: 0 0 0 0;
 
       .title {
@@ -403,42 +244,62 @@
       width: 1200px;
       margin: -40px auto 0;
       height: 145px;
-
+      color: #2c3856;
+      .gray-text {
+        color: #74819e;
+      }
       .k_left {
         width: 360px;
         height: 150px;
         border-radius: 10px;
         box-shadow: 5px 0 20px 0 #131732;
         background-color: #ffffff;
-
+        .el-icon-top {
+          color: #7dd319;
+        }
+        .el-icon-down {
+          color: #f65950;
+        }
         .top {
           p {
             width: 140px;
-
             img {
               margin: 20px 0 0 40px;
             }
           }
-
           h6 {
-            width: 200px;
+            width: 180px;
             height: 30px;
             text-align: left;
             font-weight: bold;
             margin: 25px 0 0 0;
-
             span {
               font-size: 22px;
+              &.gray-text {
+                font-size: 14px;
+              }
             }
           }
         }
-
         .foot {
+          padding-left: 40px;
+          padding-top: 6px;
+          p {
+            font-weight: bold;
+            color: #2c3856;
+            font-size: 16px;
+            margin-top: 7px;
+          }
+          .gray-text {
+            font-weight: 100;
+            display: inline-block;
+            width: 106px;
+            font-size: 14px;
+          }
           h6 {
             width: 90px;
             margin: 20px 0 0 40px;
           }
-
           .fr {
             width: 200px;
             height: 30px;
@@ -472,9 +333,7 @@
             &:last-child {
               border: 0;
             }
-
             h6 {
-              font-weight: bold;
               font-size: 16px;
               line-height: 30px;
               margin: 18px 0 0 0;
@@ -491,6 +350,9 @@
 
     .home_list {
       margin: 40px auto 100px;
+      .load-more {
+        margin-bottom: 5px;
+      }
     }
   }
 </style>

@@ -7,7 +7,8 @@ const cn = {
     "address": "账户",
     "transaction": "交易",
     "consensus": "共识",
-    "contracts": "合约"
+    "contracts": "合约",
+    "assets": "资产"
   },
 
   "public": {
@@ -85,9 +86,13 @@ const cn = {
     "enforcement": "合约执行",
     "contractMethod": "合约方法",
     "consensusLockings": "共识锁定",
-    "unavailable": "(已失效)"
+    "unavailable": "(已失效)",
+    "tradingStatus": "交易状态"
   },
-
+  "tradingStatusType": {
+    "0": "未确认",
+    "1": "已确认"
+  },
   "type": {
     "undefined": "",
     "0": "全部交易",
@@ -116,6 +121,24 @@ const cn = {
     "23": "合约注销节点",
     "24": "验证人变更",
     "25": "验证人初始化",
+    "26": "合约token跨链转账",
+    "27": "账本链内资产注册登记",
+    "28": "追加节点保证金",
+    "29": "撤销节点保证金",
+    "30": "喂价交易",
+    "31": "最终喂价交易",
+    "228": "创建交易对",
+    "229": "挂单委托",
+    "230": "挂单撤销",
+    "231": "挂单成交",
+    "232": "修改交易对",
+    "40": "确认虚拟银行变更交易",
+    "41": "虚拟银行变更交易",
+    "42": "链内充值交易",
+    "43": "提现交易",
+    "44": "确认提现成功状态交易",
+    "45": "发起提案交易",
+    "46": "对提案进行投票交易",
   },
 
   "addressType": {
@@ -159,15 +182,18 @@ const cn = {
 
   "home": {
     "home0": "当前高度",
-    "home1": "共识节点",
-    "home2": "全网委托量",
-    "home3": "总发行量",
-    "home4": "总流通量",
-    "home5": "共识年化奖励率",
-    "home6": "共识奖励计算",
-    "home7": "14天交易历史",
-    "home8": "更多",
-    "home9": "已销毁",
+    "home1": "总交易数",
+    "home2": "共识节点",
+    "home3": "最新区块时间",
+    "home4": "序号",
+    "home5": "币种",
+    "home6": "价格",
+    "home7": "市值",
+    "home8": "交易量(24h)",
+    "home9": "流通量",
+    "home10": "涨跌(24h)",
+    "home11": "请输入地址/交易hash/区块高度",
+    "home12": "查看更多"
   },
 
   "cale": {
@@ -206,7 +232,42 @@ const cn = {
   "blockList": {},
 
   "address": {
-    "address0": "地址列表"
+    "address0": "地址列表",
+    "address1": "序号",
+    "address2": "地址",
+    "address3": "锁定(NULS)",
+    "address4": "可用(NULS)",
+    "address5": "总额(NULS)",
+  },
+  "addressInfo": {
+    "addressInfo0": "交易",
+    "addressInfo1": "资产",
+    "addressInfo2": "成交",
+    "addressInfo3": "挂单",
+    "addressInfo4": "撤单",
+    "addressInfo5": "转账",
+    "addressInfo6": "高度",
+    "addressInfo7": "时间",
+    "addressInfo8": "交易对",
+    "addressInfo9": "方向",
+    "addressInfo10": "价格",
+    "addressInfo11": "数量",
+    "addressInfo12": "成交额",
+    "addressInfo13": "通证",
+    "addressInfo14": "余额",
+    "addressInfo15": "可用",
+    "addressInfo16": "冻结",
+    "addressInfo17": "买入",
+    "addressInfo18": "卖出",
+    "addressInfo19":"买方",
+    "addressInfo20":"卖方",
+    "addressInfo21":"成交数量",
+  },
+  "transactionType": {
+    "deal": "成交",
+    "pending": "挂单",
+    "cancel": "撤单",
+    "transfer": "转账",
   },
 
   "addressList": {
@@ -331,6 +392,25 @@ const cn = {
     "upgraded": "已升级节点",
     "notUpgraded": "未升级节点",
     "upgradeProgress":"升级进展"
+  },
+  "assets": {
+    "assets0": "资产名称",
+    "assets1": "交易总数",
+    "assets2": "持有地址数",
+    "assets3": "价格",
+    "assets4": "市值",
+    "assets5": "交易量(24h)",
+    "assets6": "交易",
+    "assets7": "持有地址",
+    "assets8": "高度",
+    "assets9": "时间",
+    "assets10": "交易类型",
+    "assets11": "数量",
+    "assets12": "请输入代币名称进行搜索",
+    "assets13": "序号",
+    "assets14": "地址",
+    "assets15": "持有总额",
+    "assets16": "百分比",
   },
   ...zhLocale
 };

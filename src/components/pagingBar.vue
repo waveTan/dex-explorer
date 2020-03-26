@@ -19,24 +19,6 @@
 <script>
   export default {
     props: ['pager'],
-    computed: {
-      total() {
-        return this.pager.total;
-      },
-      // 检测是否获取到无数据
-      initBack() {
-        return this.pager.total / this.pager.rows < this.pager.page;
-      },
-    },
-    watch: {
-      total() {
-        // 存在记录但未获取到数据时, 重新请求
-        if (this.initBack) {
-          this.pager.page -= 1;
-          this.$emit('change');
-        }
-      },
-    },
     methods: {
       // 每页条数
       onChangeSize(rows) {

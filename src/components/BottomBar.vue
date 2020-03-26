@@ -13,7 +13,7 @@
       <li class="b_li font14 fl capitalize" v-show="symbol ==='NULS'">
         <a href="https://nuls.community/" target="_blank">{{$t('bottom.community')}}</a>
       </li>
-      <li class="b_li font14 fl capitalize click" @click="toBugReport" v-show="symbol ==='NULS'">
+      <!--<li class="b_li font14 fl capitalize click" @click="toBugReport" v-show="symbol ==='NULS'">
         {{$t('bottom.about')}}
       </li>
       <li class="b_li font14 fl capitalize click" @click="toExplorer" v-show="symbol ==='NULS'">
@@ -21,7 +21,7 @@
       </li>
       <li class="b_li font14 fl capitalize click" @click="toUrl('protocolUpdate')">
         {{$t('protocolUpdate.upgradeProgress')}}
-      </li>
+      </li>-->
       <li class="b_li font14 fr">Copyright @2019 {{symbol}}</li>
     </ul>
   </div>
@@ -39,29 +39,29 @@
       }
     },
     created() {
-      this.getBestBlockHeader();
-      this.getNodeNumber();
-      this.getNULSNumber();
-      document.title = this.symbol + " Explorer";
+      // this.getBestBlockHeader();
+      // this.getNodeNumber();
+      // this.getNULSNumber();
+      // document.title = this.symbol + " Explorer";
       //10秒循环一次数据
-      setInterval(() => {
+      /*setInterval(() => {
         this.getBestBlockHeader();
         this.getNodeNumber();
         this.getNULSNumber();
         this.symbol = sessionStorage.hasOwnProperty('symbol') ? sessionStorage.getItem('symbol') : 'NULS';
         document.title = this.symbol + " Explorer";
-      }, 10000);
+      }, 10000);*/
     },
     mounted() {
       let that = this;
-      let IntervalName = setInterval(function () {
+      /*let IntervalName = setInterval(function () {
         that.getBestBlockHeader();
         that.getNodeNumber();
         that.getNULSNumber();
         if (that.height !== 0) {
           clearInterval(IntervalName);
         }
-      }, 1000);
+      }, 1000);*/
     },
     methods: {
 

@@ -4,24 +4,22 @@
       <div class="chart_title">
         <h2 class="fl font18 capitalize">{{$t('transaction.transaction0')}}</h2>
         <div class="fr">
-          <div class="font16"><span class="font12 capitalize">{{$t('transaction.transaction1')}}:</span>
-            {{this.txListTotal}}
-          </div>
           <div class="chart_bt">
             <el-button type="text" class="btn capitalize" @click="changeDate(1)" :class="timeRate === 1 ? 'btn_N':''">
-              {{$t('public.week')}}
+              {{$t('public.day')}}
             </el-button>
             <el-button type="text" class="btn capitalize" @click="changeDate(2)" :class="timeRate === 2 ? 'btn_N':''">
-              {{$t('public.month')}}
+              {{$t('public.week')}}
             </el-button>
             <el-button type="text" class="btn capitalize" @click="changeDate(3)" :class="timeRate === 3 ? 'btn_N':''">
-              {{$t('public.year')}}
+              {{$t('public.month')}}
             </el-button>
           </div>
         </div>
+        <div class="cb"></div>
       </div>
       <div class="chart_info">
-        <ve-line height="300px" style="top: -40px"
+        <ve-line height="330px" style="top: -40px"
                  :data="timeChartData"
                  :legend-visible="false"
                  :colors="colors"
@@ -29,37 +27,86 @@
                  :loading="timeRateDataLoading"></ve-line>
       </div>
     </div>
-    <div class="info bg-gray">
+    <div class="info">
       <div class="w1200">
         <h2 class="title font18 capitalize">{{$t('public.transactionList')}}</h2>
         <div class="tabs w1200">
-          <SelectBar size="small" v-model="typeRegion" @change="changeType"></SelectBar>
-          <el-switch class="hide-switch fr" v-model="hideSwitch" :width="32" :inactive-text="$t('block.block1')"
-                     v-show="typeRegion=== 0" @change="hideConsensusList"></el-switch>
-          <el-table :data="txList" style="width: 100%;" stripe border v-loading="txListLoading">
-            <el-table-column width="30" align="left">
-            </el-table-column>
-            <el-table-column :label="$t('public.height')" width="90" align="left">
-              <template slot-scope="scope"><span class="click" @click="toUrl('blockInfo',scope.row.height)">{{ scope.row.height }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="TXID" min-width="280" align="left">
-              <template slot-scope="scope"><span class="click" @click="toUrl('transactionInfo',scope.row.hash)">{{ scope.row.hashs }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="time" :label="$t('public.time')" width="180" align="left"></el-table-column>
-            <el-table-column :label="$t('public.type')" width="180" align="left">
-              <template slot-scope="scope"><span class="capitalize">{{ $t('type.'+scope.row.type) }}</span></template>
-            </el-table-column>
-            <el-table-column :label="$t('public.amount')+ '('+symbol+')'" width="160" align="left">
-              <template slot-scope="scope">{{ scope.row.value }}</template>
-            </el-table-column>
-            <el-table-column :label="$t('public.fee')+ '('+symbol+')'" width="160" align="left">
-              <template slot-scope="scope">{{ scope.row.fees }}</template>
-            </el-table-column>
-          </el-table>
-
-          <paging :pager="pager" @change="pagesList" v-show="pager.total > pager.page"></paging>
+          <select-bar
+            v-model="transactionRegion"
+            :typeOptions="transactionType"
+            typeName="transactionType"
+            @change="changeType"
+          >
+          </select-bar>
+          <div class="transaction-list" v-loading="listLoading">
+            <el-table :data="transactionData" stripe border style="width: 100%" v-if="transactionRegion==='deal'" >
+              <el-table-column label="" min-width="10"></el-table-column>
+              <el-table-column label="TXID" min-width="165">
+                <template slot-scope="scope">
+                <span class="cursor-p click" @click="toUrl('transactionInfo',scope.row.hash)">
+                  {{ scope.row.hashs }}
+                </span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo6')" min-width="48">
+                <template slot-scope="scope">
+                  <span class="click" @click="toUrl('blockInfo',scope.row.height)">
+                    {{ scope.row.height }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo7')" min-width="90" prop="createTime"></el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo8')" min-width="52" prop="tradingPair"></el-table-column>
+              <el-table-column label="From" min-width="80" prop="buyAddress"></el-table-column>
+              <el-table-column label="To" min-width="80" prop="sellAddress"></el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo10')" min-width="60" prop="price"></el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo11')" min-width="60" prop="baseAmount"></el-table-column>
+            </el-table>
+            <el-table :data="transactionData" stripe border style="width: 100%" v-else-if="transactionRegion==='transfer'" >
+              <el-table-column label="" min-width="10"></el-table-column>
+              <el-table-column label="TXID" min-width="180">
+                <template slot-scope="scope">
+                <span class="cursor-p click" @click="toUrl('transactionInfo',scope.row.hash)">
+                  {{ scope.row.hashs }}
+                </span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo6')" min-width="50">
+                <template slot-scope="scope">
+                  <span class="click" @click="toUrl('blockInfo',scope.row.height)">
+                    {{ scope.row.height }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo7')" min-width="80" prop="createTime"></el-table-column>
+              <el-table-column label="from" min-width="80" prop="fromAddress"></el-table-column>
+              <el-table-column label="to" min-width="80" prop="toAddress"></el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo11')" min-width="80" prop="value"></el-table-column>
+            </el-table>
+            <el-table :data="transactionData" stripe border style="width: 100%" v-else >
+              <el-table-column label="" min-width="20"></el-table-column>
+              <el-table-column label="TXID" min-width="180">
+                <template slot-scope="scope">
+                <span class="cursor-p click" @click="toUrl('transactionInfo',scope.row.hash)">
+                  {{ scope.row.hashs }}
+                </span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo6')" min-width="50">
+                <template slot-scope="scope">
+                  <span class="click" @click="toUrl('blockInfo',scope.row.height)">
+                    {{ scope.row.height }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo7')" min-width="90" prop="createTime"></el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo8')" min-width="70" prop="tradingPair"></el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo9')" min-width="40" prop="direction"></el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo10')" min-width="70" prop="price"></el-table-column>
+              <el-table-column :label="$t('addressInfo.addressInfo11')" min-width="70" prop="baseAmount"></el-table-column>
+            </el-table>
+            <paging :pager="pager" @change="getTransactionList" v-show="pager.total > pager.rows"></paging>
+          </div>
         </div>
       </div>
     </div>
@@ -70,11 +117,11 @@
   import moment from 'moment'
   import paging from '@/components/pagingBar';
   import SelectBar from '@/components/SelectBar';
-  import {getLocalTime, superLong, timesDecimals} from '@/api/util.js'
+  import {getLocalTime, superLong, timesDecimals,divisionDecimals} from '@/api/util.js'
 
   export default {
     data() {
-      this.colors = ['#7db46d', '#7db46d', '#7db46d',
+      this.colors = ['#318ef6', '#7db46d', '#7db46d',
         '#546570', '#c4ccd3'];
       this.chartSettings = {
         yAxisType: ['normal'],
@@ -83,7 +130,6 @@
         },
       };
       return {
-
         //统计图数据
         timeChartData: {
           columns: [],
@@ -91,44 +137,48 @@
         },
         timeRateDataLoading: true,
         timeRate: 2,
+
         //交易类型
-        typeRegion: 0,
-        //隐藏滑块
-        hideSwitch: false,
-        //交易列表
-        txList: [],
-        //交易列表加载动画
-        txListLoading: true,
-        //交易列表总数
-        txListTotal: 0,
+        transactionRegion: 'deal', //交易下拉
+        transactionType: [
+          {label: 'deal', value: 'deal'},
+          {label: 'pending', value: 'pending'},
+          {label: 'cancel', value: 'cancel'},
+          {label: 'transfer', value: 'transfer'},
+        ],
+        methodName: 'getDealTxList',
+        listLoading: true,
+        transactionData:[],
         //分页信息
         pager: {
           total: 0,
           page: 1,
           rows: 6,
         },
-        symbol: sessionStorage.hasOwnProperty('symbol') ? sessionStorage.getItem('symbol') : 'NULS',//默认symbol
-        decimals: sessionStorage.hasOwnProperty('decimals') ? Number(sessionStorage.getItem('decimals')) : 8,//decimals
       }
     },
     components: {
       paging,
       SelectBar
     },
+    computed: {
+      directionType() {
+        return {
+          1: this.$t('addressInfo.addressInfo17'),
+          2: this.$t('addressInfo.addressInfo18'),
+        }
+      }
+    },
     created() {
       this.getYearRateData(this.timeRate);
-      this.getTransactionsTotal();
-      this.getTxList(this.pager.page, this.pager.rows, this.typeRegion, this.hideSwitch);
+      this.getTransactionList()
     },
     mounted() {
     },
     methods: {
-
-      /**
-       * 获取交易历史数据统计
-       */
+      //获取交易历史数据统计
       getYearRateData(time) {
-        this.$post('/', 'getTxStatistical', [time])
+        this.$post('/jsonrpc', 'getStatisticalTx', [time])
           .then((response) => {
             //console.log(response);
             if (response.hasOwnProperty("result")) {
@@ -138,22 +188,37 @@
             }
           })
       },
-
-      /**
-       * @disc: 获取最新的交易总量
-       * @date: 2019-09-10 14:02
-       * @author: Wave
-       */
-      getTransactionsTotal() {
-        this.$post('/', 'getCoinInfo', [])
+      //获取交易列表
+      getTransactionList() {
+        this.listLoading = true
+        this.$post('/jsonrpc', this.methodName, [, this.pager.page, this.pager.rows])
           .then((response) => {
             //console.log(response);
             if (response.hasOwnProperty("result")) {
-              this.txListTotal = response.result.txCount;
+              setTimeout(()=>{
+                this.listLoading = false
+              },1000)
+              const res = response.result.list
+              res.map(v=>{
+                v.hashs = superLong(v.hash, 16)
+                v.createTime = moment(getLocalTime(v.createTime*1000)).format('YYYY-MM-DD HH:mm:ss')
+                v.tradingPair = v.baseSymbol+ '/' + v.quoteSymbol
+                v.direction = this.directionType[v.type]
+                v.price = divisionDecimals(v.price, v.quoteDecimal) //价格
+                v.baseAmount = divisionDecimals(v.baseAmount, v.baseDecimal) + ' ' + v.baseSymbol //成交数量
+                v.quoteAmount = divisionDecimals(v.quoteAmount, v.quoteDecimal) + ' ' + v.quoteSymbol  //成交额
+                v.buyAddress = superLong(v.buyAddress,6)
+                v.sellAddress = superLong(v.sellAddress,6)
+                //base交易的/quote持有的  BTC/USDI usdi买btc
+                v.fromAddress = superLong(v.fromAddress,6)
+                v.toAddress = superLong(v.toAddress,6)
+                v.value = divisionDecimals(v.value,v.decimal) + ' ' + v.symbol
+              })
+              this.transactionData = res
+              this.pager.total = response.result.total
             }
           })
       },
-
       /**
        * 选择统计数据的周、月、年
        **/
@@ -166,53 +231,25 @@
       },
 
       /**
-       * 获交易列表
-       */
-      getTxList(page, rows, type, show) {
-        this.$post('/', 'getTxList', [page, rows, type, show])
-          .then((response) => {
-            //console.log(response);
-            if (response.hasOwnProperty("result")) {
-              for (let item of response.result.list) {
-                item.time = moment(getLocalTime(item.createTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
-                item.hashs = superLong(item.hash, 20);
-                item.value = timesDecimals(item.value, this.decimals);
-                item.fees = timesDecimals(item.fee.value, this.decimals);
-              }
-              this.txList = response.result.list;
-              if (type === 0 && !show) {
-                this.txListTotal = response.result.totalCount
-              }
-              this.pager.total = response.result.totalCount;
-              this.txListLoading = false;
-            }
-          })
-      },
-
-      /**
-       * 分页功能
-       **/
-      pagesList() {
-        this.txListLoading = true;
-        this.getTxList(this.pager.page, this.pager.rows, this.typeRegion, this.hideSwitch);
-      },
-
-      /**
        * 获取交易类型
        **/
       changeType(type) {
-        this.pager = {total: 0, page: 1, rows: 7,};
-        this.typeRegion = parseInt(type);
-        this.getTxList(this.pager.page, this.pager.rows, this.typeRegion, this.hideSwitch);
-      },
-
-      /**
-       * 隐藏共识奖励
-       **/
-      hideConsensusList() {
-        this.txListLoading = true;
-        this.pager = {total: 0, page: 1, rows: 6};
-        this.getTxList(this.pager.page, this.pager.rows, this.typeRegion, this.hideSwitch);
+        this.transactionRegion = type;
+        switch (type) {
+          case 'pending':
+            this.methodName = 'getOrderTxList'
+            break
+          case 'cancel':
+            this.methodName = 'getCancelOrderTxList'
+            break
+          case 'transfer':
+            this.methodName = 'getTransferTxList'
+            break
+          default:
+            this.methodName = 'getDealTxList'
+        }
+        this.pager.page = 1;
+        this.getTransactionList()
       },
 
       /**
@@ -248,7 +285,7 @@
         }
       }
       .chart_info {
-        margin: 20px 0 0 0;
+        /*margin: 20px 0 0 0;*/
       }
     }
     .info {

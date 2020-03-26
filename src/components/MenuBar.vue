@@ -1,6 +1,6 @@
 <template>
   <div class="nav">
-    <el-menu :default-active="activedMenu($route.path)" mode="horizontal" active-text-color="#7db46d"
+    <el-menu :default-active="activedMenu($route.path)" mode="horizontal" active-text-color="#318ef6"
              @select="handleSelect">
       <el-menu-item index="home" class="font18 fw capitalize">{{$t('nav.home')}}</el-menu-item>
       <el-menu-item index="block" class="font18 fw capitalize">{{$t('nav.block')}}</el-menu-item>
@@ -8,7 +8,7 @@
       <el-menu-item index="transaction" class="font18 fw capitalize">{{$t('nav.transaction')}}</el-menu-item>
      <!-- <el-menu-item index="consensus" class="font18 fw capitalize">{{$t('nav.consensus')}}</el-menu-item>
       <el-menu-item index="contracts" class="font18 fw capitalize">{{$t('nav.contracts')}}</el-menu-item>-->
-      <el-menu-item index="assets" class="font18 fw capitalize">资产</el-menu-item>
+      <el-menu-item index="assets" class="font18 fw capitalize">{{$t('nav.assets')}}</el-menu-item>
     </el-menu>
   </div>
 </template>
@@ -51,16 +51,14 @@
        * 导航栏的选中
        **/
       activedMenu(val) {
-        if (val.indexOf('/block') === 0) {
+        if (val.indexOf('/block') >-1) {
           return 'block'
-        } else if (val.indexOf('/address') === 0) {
+        } else if (val.indexOf('/address') >-1) {
           return 'address'
-        } else if (val.indexOf('/transaction') === 0) {
+        } else if (val.indexOf('/transaction') >-1) {
           return 'transaction'
-        } else if (val.indexOf('/consensus') === 0 || val.indexOf('/rotation') === 0) {
-          return 'consensus'
-        } else if (val.indexOf('/contracts') === 0 || val.indexOf('/token') === 0) {
-          return 'contracts'
+        }  else if (val.indexOf('/assets') >-1) {
+          return 'assets'
         } else {
           return 'home'
         }
@@ -86,6 +84,9 @@
         height: 80px;
         line-height: 80px;
         font-weight: normal;
+        &:not(.is-disabled):hover {
+          color: #318ef6
+        }
       }
       .is-active {
         border-color: transparent !important;

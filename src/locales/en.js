@@ -7,7 +7,8 @@ const en = {
     "address": "Account",
     "transaction": "Transaction",
     "consensus": "Consensus",
-    "contracts": "Contracts"
+    "contracts": "Contracts",
+    "assets": "Assets"
   },
 
   "public": {
@@ -85,9 +86,13 @@ const en = {
     "enforcement":"Contract Result",
     "contractMethod":"Contract Method",
     "consensusLockings":"Consensus Locking",
-    "unavailable":"(Unavailable)"
+    "unavailable":"(Unavailable)",
+    "tradingStatus": "Trading Status"
   },
-
+  "tradingStatusType": {
+    "0": "未确认",
+    "1": "已确认"
+  },
   "type": {
     "undefined": "",
     "0": "All",
@@ -116,6 +121,24 @@ const en = {
     "23": "Contract cancellation node",
     "24": "Verifier Change",
     "25": "Verifier initialization",
+    "26": "合约token跨链转账",
+    "27": "账本链内资产注册登记",
+    "28": "追加节点保证金",
+    "29": "撤销节点保证金",
+    "30": "喂价交易",
+    "31": "最终喂价交易",
+    "228": "创建交易对",
+    "229": "挂单委托",
+    "230": "挂单撤销",
+    "231": "挂单成交",
+    "232": "修改交易对",
+    "40": "确认虚拟银行变更交易",
+    "41": "虚拟银行变更交易",
+    "42": "链内充值交易",
+    "43": "提现交易",
+    "44": "确认提现成功状态交易",
+    "45": "发起提案交易",
+    "46": "对提案进行投票交易",
   },
 
   "addressType": {
@@ -159,15 +182,18 @@ const en = {
 
   "home": {
     "home0": "Height",
-    "home1": "Consensus nodes",
-    "home2": "Total stake",
-    "home3": "Total supply",
-    "home4": "Circulating Supply",
-    "home5": "Consensus annualized reward rate",
-    "home6": "Consenseus reward calculator",
-    "home7": "14 days Transaction history",
-    "home8": "More",
-    "home9":"Destroyed",
+    "home1": "总交易数",
+    "home2": "Consensus nodes",
+    "home3": "最新区块时间",
+    "home4": "序号",
+    "home5": "币种",
+    "home6": "价格",
+    "home7": "市值",
+    "home8": "交易量(24h)",
+    "home9": "流通量",
+    "home10": "涨跌(24h)",
+    "home11": "请输入地址/交易hash/区块高度",
+    "home12": "查看更多"
   },
 
   "cale": {
@@ -206,7 +232,42 @@ const en = {
   "blockList": {},
 
   "address": {
-    "address0": "Address list"
+    "address0": "Address list",
+    "address1": "序号",
+    "address2": "地址",
+    "address3": "锁定(NULS)",
+    "address4": "可用(NULS)",
+    "address5": "总额(NULS)",
+  },
+  "addressInfo": {
+    "addressInfo0": "交易",
+    "addressInfo1": "资产",
+    "addressInfo2": "成交",
+    "addressInfo3": "挂单",
+    "addressInfo4": "撤单",
+    "addressInfo5": "转账",
+    "addressInfo6": "高度",
+    "addressInfo7": "时间",
+    "addressInfo8": "交易对",
+    "addressInfo9": "方向",
+    "addressInfo10": "价格",
+    "addressInfo11": "数量",
+    "addressInfo12": "成交额",
+    "addressInfo13": "通证",
+    "addressInfo14": "余额",
+    "addressInfo15": "可用",
+    "addressInfo16": "冻结",
+    "addressInfo17": "买入",
+    "addressInfo18": "卖出",
+    "addressInfo19":"买方",
+    "addressInfo20":"卖方",
+    "addressInfo21":"成交数量",
+  },
+  "transactionType": {
+    "deal": "成交",
+    "pending": "挂单",
+    "cancel": "撤单",
+    "transfer": "转账",
   },
 
   "addressList": {
@@ -326,12 +387,30 @@ const en = {
     "about": "Bug Report",
     "explorer1":"1.0 Explorer",
   },
-
   "protocolUpdate": {
     "name": "Protocol update progress",
     "upgraded": "Upgraded node",
     "notUpgraded": "Node not upgraded",
     "upgradeProgress":"Upgrade progress"
+  },
+  "assets": {
+    "assets0": "资产名称",
+    "assets1": "交易总数",
+    "assets2": "持有地址数",
+    "assets3": "价格",
+    "assets4": "市值",
+    "assets5": "交易量(24h)",
+    "assets6": "交易",
+    "assets7": "持有地址",
+    "assets8": "高度",
+    "assets9": "时间",
+    "assets10": "交易类型",
+    "assets11": "数量",
+    "assets12": "请输入代币名称进行搜索",
+    "assets13": "序号",
+    "assets14": "地址",
+    "assets15": "持有总额",
+    "assets16": "百分比",
   },
   ...enLocale
 

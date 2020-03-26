@@ -9,12 +9,12 @@
       </div>
 
       <div class="header_language fl">
-        <div class="top-search fl" v-if="navActive !== 'home' && navActive !== '/'">
+        <div class="top-search fl">
           <div class="top_height fl" v-if="!topLong">
             <i class="iconfont icon-block fCN font20"></i>
             <!-- <span>{{height}}</span>-->
             <label class="number-grow-warp">
-              <span>{{count.height}}</span>
+              <span>{{$store.state.blockInfo.bestBlockHeight}}</span>
             </label>
             <!--<numberGrow :value="count.height"></numberGrow>-->
           </div>
@@ -24,11 +24,6 @@
                     @blur="blurSearch">
             <i class="el-icon-search el-input__icon click" slot="suffix" @click="clickSearch"></i>
           </el-input>
-        </div>
-        <div class="destroyed font14 fl pc" v-else>
-          <i class="iconfont icon-jiandingxiaohui fred"></i>&nbsp;
-          {{$t('home.home9')}}：{{destroyedAddressAmount}}
-          <span class="fCN">&nbsp;NULS</span>
         </div>
         <div class="language font14 fr" @click="selectLanguage(lang,true)">{{lang === 'en' ? '简体中文':'English' }}</div>
       </div>
@@ -52,22 +47,18 @@
 
 <script>
   import axios from 'axios'
-  import logoBeta from '@/assets/img/logo-beta.svg'
   import logo from '@/assets/img/logo.svg'
   import MenuBar from '@/components/MenuBar';
-  import {RUN_DEV, API_ROOT} from '@/config'
-  import {timesDecimals, Plus} from '@/api/util.js'
+  import { API_ROOT} from '@/config'
+  import {getLocalTime} from '@/api/util.js'
+  import moment from "moment";
 
   export default {
     data() {
       return {
-        logoSvg: RUN_DEV ? logo : logoBeta,
+        logoSvg: logo,
         //默认选择菜单
         navActive: sessionStorage.hasOwnProperty('navActive') ? sessionStorage.getItem('navActive') : 'home',
-        //统计信息
-        count: {
-          height: this.$store.state.height,//当前高度
-        },
         //搜索框内容
         searchValue: '',
         //顶部搜索框加长
@@ -75,9 +66,7 @@
         //语言
         lang: 'en',
         //移动端显示
-        showMobile: false,
-        RUN_DEV: RUN_DEV,//运行模式
-        destroyedAddressAmount: 0,//销毁地址金额
+        showMobile: false
       };
     },
     components: {
@@ -94,32 +83,26 @@
           this.lang = 'en'
         }
       }
+      this.getInfo()
     },
     mounted() {
       this.selectLanguage(this.lang, false);
-      //秒循环一次数据
       setInterval(() => {
-        this.count.height = this.$store.state.height;
-        this.navActive = this.$route.path;
-      }, 100);
-      this.getAddressInfo();
+        this.getInfo()
+      }, 10000);
     },
     methods: {
 
-      /**
-       * @disc: 获销毁数量
-       * @date: 2019-11-15 16:37
-       * @author: Wave
-       */
-      async getAddressInfo() {
-        const url = API_ROOT + '/nuls/assets/get';
-        let dataRes = await axios.get(url);
-        //console.log(dataRes.data);
-        if (dataRes.data.success) {
-          this.destroyedAddressAmount = dataRes.data.data.destroy.toFixed(3)
-        } else {
-          this.destroyedAddressAmount = 0
-        }
+      //查询链基础信息
+      getInfo() {
+        this.$post('/jsonrpc', 'getInfo', [])
+          .then((response) => {
+            //console.log(response);
+            if (response.hasOwnProperty("result")) {
+              response.result.bestBlockTime = moment(getLocalTime(response.result.bestBlockTime*1000)).format('YYYY-MM-DD HH:mm:ss')
+              this.$store.commit('SET_BLOCK_INFO',response.result)
+            }
+          })
       },
 
       /**
@@ -140,15 +123,15 @@
        *  顶部搜索框
        **/
       clickSearch() {
-        this.$post('/', 'search', [this.searchValue])
+        this.$post('/jsonrpc', 'search', [this.searchValue])
           .then((response) => {
             //console.log(response);
             if (response.hasOwnProperty("result")) {
               if (response.result.type === 'block') {
                 this.$router.push({
                   name: 'blockInfo',
-                  query: {height: response.result.data.txList[0].height}
-                })
+                  query: {height: response.result.data.height}
+                });
               } else if (response.result.type === 'tx') {
                 this.$router.push({
                   name: 'transactionInfo',
@@ -158,11 +141,6 @@
                 this.$router.push({
                   name: 'addressInfo',
                   query: {address: response.result.data.address}
-                })
-              } else if (response.result.type === 'contract') {
-                this.$router.push({
-                  name: 'contractsInfo',
-                  query: {contractAddress: response.result.data.contractAddress, tabName: 'first'}
                 })
               } else {
                 this.$message({message: this.$t('codeInfo.codeInfo12'), type: 'error', duration: 1000});
@@ -226,7 +204,7 @@
         .logo {
           width: 104px;
           height: 40px;
-          margin: 20px 0 0 0;
+          margin-top: 22px;
         }
       }
       .menu {
