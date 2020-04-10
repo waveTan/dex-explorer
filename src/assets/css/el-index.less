@@ -44,7 +44,7 @@
   }
 }
 .el-input input {
-  border-color: #959eb4;
+  //border-color: #959eb4;
   &:hover {
     border-color: @Ncolour;
   }
@@ -138,7 +138,12 @@
   }
   .is-focus {
     .el-input__inner {
-      border-color: #dcdfe6 !important;
+      border-color: @Ncolour !important;
+    }
+  }
+  &:hover {
+    .el-input input {
+      border-color: @Ncolour;
     }
   }
 }

@@ -97,6 +97,13 @@
     .el-input {
       width: 500px;
       margin-bottom: 20px;
+      input {
+        height: 34px;
+        line-height: 34px;
+      }
+      .el-input__icon {
+        line-height: 34px;
+      }
     }
     .rise-up {
       color: #7dd319;

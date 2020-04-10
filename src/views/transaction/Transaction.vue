@@ -19,7 +19,7 @@
         <div class="cb"></div>
       </div>
       <div class="chart_info">
-        <ve-line height="330px" style="top: -40px"
+        <ve-line height="330px" style="top: -40px;zIndex: -1"
                  :data="timeChartData"
                  :legend-visible="false"
                  :colors="colors"
